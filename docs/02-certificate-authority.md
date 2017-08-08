@@ -27,29 +27,29 @@ This lab requires the `cfssl` and `cfssljson` binaries. Download them from the [
 ### OS X
 
 ```
-wget https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
-chmod +x cfssl_darwin-amd64
-sudo mv cfssl_darwin-amd64 /usr/local/bin/cfssl
+curl -o cfssl https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
+chmod +x cfssl
+sudo mv cfssl /usr/local/bin/
 ```
 
 ```
-wget https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
-chmod +x cfssljson_darwin-amd64
-sudo mv cfssljson_darwin-amd64 /usr/local/bin/cfssljson
+curl -o cfssljson https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
+chmod +x cfssljson
+sudo mv cfssljson /usr/local/bin/
 ```
 
 ### Linux
 
 ```
-wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
-chmod +x cfssl_linux-amd64
-sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
+curl -o cfssl https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+chmod +x cfssl
+sudo mv cfssl /usr/local/bin/
 ```
 
 ```
-wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
-chmod +x cfssljson_linux-amd64
-sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
+curl -o cfssljson https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+chmod +x cfssljson
+sudo mv cfssljson /usr/local/bin/
 ```
 
 ## Set up a Certificate Authority
@@ -208,8 +208,8 @@ kube-proxy.pem
 The Kubernetes public IP address will be included in the list of subject alternative names for the Kubernetes server certificate. This will ensure the TLS certificate is valid for remote client access.
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region us-central1 \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe k8s \
+  --region europe-west1 \
   --format 'value(address)')
 ```
 

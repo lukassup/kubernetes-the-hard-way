@@ -7,7 +7,7 @@ Run the following commands from the machine which will be your Kubernetes Client
 ### OS X
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/darwin/amd64/kubectl
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/darwin/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -15,7 +15,7 @@ sudo mv kubectl /usr/local/bin
 ### Linux
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/linux/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -25,8 +25,8 @@ sudo mv kubectl /usr/local/bin
 In this section you will configure the kubectl client to point to the [Kubernetes API Server Frontend Load Balancer](04-kubernetes-controller.md#setup-kubernetes-api-server-frontend-load-balancer).
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region us-central1 \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe k8s \
+  --region europe-west1 \
   --format 'value(address)')
 ```
 
@@ -37,7 +37,7 @@ Also be sure to locate the CA certificate [created earlier](02-certificate-autho
 The following commands will build up the default kubeconfig file used by kubectl.
 
 ```
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster k8s-cluster \
   --certificate-authority=ca.pem \
   --embed-certs=true \
   --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
@@ -50,13 +50,13 @@ kubectl config set-credentials admin \
 ```
 
 ```
-kubectl config set-context kubernetes-the-hard-way \
-  --cluster=kubernetes-the-hard-way \
+kubectl config set-context k8s-cluster \
+  --cluster=k8s-cluster \
   --user=admin
 ```
 
 ```
-kubectl config use-context kubernetes-the-hard-way
+kubectl config use-context k8s-cluster
 ```
 
 At this point you should be able to connect securly to the remote API server:
@@ -80,7 +80,7 @@ kubectl get nodes
 
 ```
 NAME      STATUS    AGE       VERSION
-worker0   Ready     7m        v1.6.1
-worker1   Ready     5m        v1.6.1
-worker2   Ready     2m        v1.6.1
+worker0   Ready     7m        v1.7.3
+worker1   Ready     5m        v1.7.3
+worker2   Ready     2m        v1.7.3
 ```

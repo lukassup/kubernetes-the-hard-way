@@ -27,11 +27,11 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 Set the compute region and zone to us-central1:
 
 ```
-gcloud config set compute/region us-central1
+gcloud config set compute/region europe-west1
 ```
 
 ```
-gcloud config set compute/zone us-central1-f
+gcloud config set compute/zone europe-west1-b
 ```
 
 ## Setup Networking
@@ -40,16 +40,16 @@ gcloud config set compute/zone us-central1-f
 Create a custom network:
 
 ```
-gcloud compute networks create kubernetes-the-hard-way --mode custom
+gcloud compute networks create k8s-net --mode custom
 ```
 
 Create a subnet for the Kubernetes cluster:
 
 ```
-gcloud compute networks subnets create kubernetes \
-  --network kubernetes-the-hard-way \
+gcloud compute networks subnets create k8s \
+  --network k8s-net \
   --range 10.240.0.0/24 \
-  --region us-central1
+  --region europe-west1
 ```
 
 ### Create Firewall Rules
@@ -57,34 +57,34 @@ gcloud compute networks subnets create kubernetes \
 ```
 gcloud compute firewall-rules create allow-internal \
   --allow tcp,udp,icmp \
-  --network kubernetes-the-hard-way \
+  --network k8s-net \
   --source-ranges 10.240.0.0/24,10.200.0.0/16
 ```
 
 ```
 gcloud compute firewall-rules create allow-external \
   --allow tcp:22,tcp:3389,tcp:6443,icmp \
-  --network kubernetes-the-hard-way \
+  --network k8s-net \
   --source-ranges 0.0.0.0/0
 ```
 
 ```
 gcloud compute firewall-rules create allow-healthz \
   --allow tcp:8080 \
-  --network kubernetes-the-hard-way \
-  --source-ranges 130.211.0.0/22,35.191.0.0/16
+  --network k8s-net \
+  --source-ranges 35.195.0.0/16,104.199.100.0/22
 ```
 
 
 ```
-gcloud compute firewall-rules list --filter "network=kubernetes-the-hard-way"
+gcloud compute firewall-rules list --filter "network=k8s-net"
 ```
 
 ```
-NAME            NETWORK                  SRC_RANGES                   RULES                          SRC_TAGS  TARGET_TAGS
-allow-external  kubernetes-the-hard-way  0.0.0.0/0                    tcp:22,tcp:3389,tcp:6443,icmp
-allow-healthz   kubernetes-the-hard-way  130.211.0.0/22,35.191.0.0/16 tcp:8080
-allow-internal  kubernetes-the-hard-way  10.240.0.0/24,10.200.0.0/16  tcp,udp,icmp
+NAME            NETWORK                  SRC_RANGES                     RULES                          SRC_TAGS  TARGET_TAGS
+allow-external  k8s-net                  0.0.0.0/0                      tcp:22,tcp:3389,tcp:6443,icmp
+allow-healthz   k8s-net                  35.195.0.0/16,104.199.100.0/22 tcp:8080
+allow-internal  k8s-net                  10.240.0.0/24,10.200.0.0/16    tcp,udp,icmp
 ```
 
 ### Create the Kubernetes Public Address
@@ -92,21 +92,21 @@ allow-internal  kubernetes-the-hard-way  10.240.0.0/24,10.200.0.0/16  tcp,udp,ic
 Create a public IP address that will be used by remote clients to connect to the Kubernetes control plane:
 
 ```
-gcloud compute addresses create kubernetes-the-hard-way --region=us-central1
+gcloud compute addresses create k8s --region=europe-west1
 ```
 
 ```
-gcloud compute addresses list kubernetes-the-hard-way
+gcloud compute addresses list k8s
 ```
 
 ```
-NAME                     REGION       ADDRESS          STATUS
-kubernetes-the-hard-way  us-central1  XXX.XXX.XXX.XXX  RESERVED
+NAME                     REGION        ADDRESS          STATUS
+k8s-net                  europe-west1  XXX.XXX.XXX.XXX  RESERVED
 ```
 
 ## Provision Virtual Machines
 
-All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it runs a newish Linux kernel with good support for Docker.
+All the VMs in this lab will be provisioned using Debian 9 mainly because it runs a newish Linux kernel with good support for Docker.
 
 ### Virtual Machines
 
@@ -114,35 +114,38 @@ All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it
 
 ```
 gcloud compute instances create controller0 \
- --boot-disk-size 200GB \
+ --preemptible \
+ --boot-disk-size 20G \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20170307 \
- --image-project ubuntu-os-cloud \
+ --image-project debian-cloud \
+ --image debian-9-stretch-v20170717 \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.10 \
- --subnet kubernetes
+ --subnet k8s
 ```
 
 ```
 gcloud compute instances create controller1 \
- --boot-disk-size 200GB \
+ --preemptible \
+ --boot-disk-size 20G \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20170307 \
- --image-project ubuntu-os-cloud \
+ --image-project debian-cloud \
+ --image debian-9-stretch-v20170717 \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.11 \
- --subnet kubernetes
+ --subnet k8s
 ```
 
 ```
 gcloud compute instances create controller2 \
- --boot-disk-size 200GB \
+ --preemptible \
+ --boot-disk-size 20G \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20170307 \
- --image-project ubuntu-os-cloud \
+ --image-project debian-cloud \
+ --image debian-9-stretch-v20170717 \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.12 \
- --subnet kubernetes
+ --subnet k8s
 ```
 
 #### Kubernetes Workers
@@ -151,13 +154,14 @@ Include socat depedency on worker VMs to enable kubelet's portfw functionality.
 
 ```
 gcloud compute instances create worker0 \
- --boot-disk-size 200GB \
+ --preemptible \
+ --boot-disk-size 20G \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20170307 \
- --image-project ubuntu-os-cloud \
+ --image-project debian-cloud \
+ --image debian-9-stretch-v20170717 \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.20 \
- --subnet kubernetes \
+ --subnet k8s \
  --metadata startup-script='#! /bin/bash
 apt-get update
 apt-get install -y socat
@@ -166,13 +170,14 @@ EOF'
 
 ```
 gcloud compute instances create worker1 \
- --boot-disk-size 200GB \
+ --preemptible \
+ --boot-disk-size 20G \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20170307 \
- --image-project ubuntu-os-cloud \
+ --image-project debian-cloud \
+ --image debian-9-stretch-v20170717 \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.21 \
- --subnet kubernetes \
+ --subnet k8s \
  --metadata startup-script='#! /bin/bash
 apt-get update
 apt-get install -y socat
@@ -181,13 +186,14 @@ EOF'
 
 ```
 gcloud compute instances create worker2 \
- --boot-disk-size 200GB \
+ --preemptible \
+ --boot-disk-size 20G \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20170307 \
- --image-project ubuntu-os-cloud \
+ --image-project debian-cloud \
+ --image debian-9-stretch-v20170717 \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.22 \
- --subnet kubernetes \
+ --subnet k8s \
  --metadata startup-script='#! /bin/bash
 apt-get update
 apt-get install -y socat

@@ -9,7 +9,7 @@ The kubectl client will be used to generate kubeconfig files which will be consu
 ### OS X
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.6.1/bin/darwin/amd64/kubectl
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/darwin/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -17,7 +17,7 @@ sudo mv kubectl /usr/local/bin
 ### Linux
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.6.1/bin/linux/amd64/kubectl
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/linux/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -67,8 +67,8 @@ Each kubeconfig requires a Kubernetes master to connect to. To support H/A the I
 ### Set the Kubernetes Public Address
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region us-central1 \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe k8s \
+  --region europe-west1 \
   --format 'value(address)')
 ```
 
@@ -77,7 +77,7 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-har
 ### Create the bootstrap kubeconfig file
 
 ```
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster k8s-cluster \
   --certificate-authority=ca.pem \
   --embed-certs=true \
   --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
@@ -92,7 +92,7 @@ kubectl config set-credentials kubelet-bootstrap \
 
 ```
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=k8s-cluster \
   --user=kubelet-bootstrap \
   --kubeconfig=bootstrap.kubeconfig
 ```
@@ -105,7 +105,7 @@ kubectl config use-context default --kubeconfig=bootstrap.kubeconfig
 
 
 ```
-kubectl config set-cluster kubernetes-the-hard-way \
+kubectl config set-cluster k8s-cluster \
   --certificate-authority=ca.pem \
   --embed-certs=true \
   --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
@@ -122,7 +122,7 @@ kubectl config set-credentials kube-proxy \
 
 ```
 kubectl config set-context default \
-  --cluster=kubernetes-the-hard-way \
+  --cluster=k8s-cluster \
   --user=kube-proxy \
   --kubeconfig=kube-proxy.kubeconfig
 ```

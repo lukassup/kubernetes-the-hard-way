@@ -11,7 +11,7 @@ gcloud -q compute instances delete \
 ## Networking
 
 ```
-gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule --region us-central1
+gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule --region europe-west1
 ```
 
 ```
@@ -23,7 +23,7 @@ gcloud -q compute http-health-checks delete kube-apiserver-health-check
 ```
 
 ```
-gcloud -q compute addresses delete kubernetes-the-hard-way
+gcloud -q compute addresses delete k8s
 ```
 
 
@@ -43,9 +43,9 @@ gcloud -q compute routes delete \
 ```
 
 ```
-gcloud -q compute networks subnets delete kubernetes
+gcloud -q compute networks subnets delete k8s
 ```
 
 ```
-gcloud -q compute networks delete kubernetes-the-hard-way
+gcloud -q compute networks delete k8s-net
 ```

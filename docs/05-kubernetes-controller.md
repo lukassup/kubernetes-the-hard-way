@@ -56,19 +56,19 @@ sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 Download the official Kubernetes release binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kube-apiserver
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/linux/amd64/kube-apiserver
 ```
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kube-controller-manager
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/linux/amd64/kube-controller-manager
 ```
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kube-scheduler
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/linux/amd64/kube-scheduler
 ```
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
+curl -O https://storage.googleapis.com/kubernetes-release/release/v1.7.3/bin/linux/amd64/kubectl
 ```
 
 Install the Kubernetes binaries:
@@ -287,7 +287,7 @@ gcloud compute http-health-checks create kube-apiserver-health-check \
 ```
 gcloud compute target-pools create kubernetes-target-pool \
   --http-health-check=kube-apiserver-health-check \
-  --region us-central1
+  --region europe-west1
 ```
 
 ```
@@ -296,8 +296,8 @@ gcloud compute target-pools add-instances kubernetes-target-pool \
 ```
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region us-central1 \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe k8s \
+  --region europe-west1 \
   --format 'value(address)')
 ```
 
@@ -306,5 +306,5 @@ gcloud compute forwarding-rules create kubernetes-forwarding-rule \
   --address ${KUBERNETES_PUBLIC_ADDRESS} \
   --ports 6443 \
   --target-pool kubernetes-target-pool \
-  --region us-central1
+  --region europe-west1
 ```

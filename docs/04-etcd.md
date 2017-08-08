@@ -71,7 +71,7 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name:
 
 ```
-ETCD_NAME=controller$(echo $INTERNAL_IP | cut -c 11)
+ETCD_NAME=controller${INTERNAL_IP:10}
 ```
 
 The etcd server will be started and managed by systemd. Create the etcd systemd unit file:
