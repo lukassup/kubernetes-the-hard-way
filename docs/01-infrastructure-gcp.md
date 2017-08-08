@@ -9,13 +9,13 @@ gcloud compute instances list
 ```
 
 ````
-NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
-controller0  us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
-controller1  us-central1-f  n1-standard-1               10.240.0.11  XXX.XXX.XXX.XXX  RUNNING
-controller2  us-central1-f  n1-standard-1               10.240.0.12  XXX.XXX.XXX.XXX  RUNNING
-worker0      us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
-worker1      us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
-worker2      us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
+NAME         ZONE            MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
+controller0  europe-west1-b  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
+controller1  europe-west1-b  n1-standard-1               10.240.0.11  XXX.XXX.XXX.XXX  RUNNING
+controller2  europe-west1-b  n1-standard-1               10.240.0.12  XXX.XXX.XXX.XXX  RUNNING
+worker0      europe-west1-b  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
+worker1      europe-west1-b  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
+worker2      europe-west1-b  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
 ````
 
 > All machines will be provisioned with fixed private IP addresses to simplify the bootstrap process.
@@ -24,7 +24,7 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 
 ## Prerequisites
 
-Set the compute region and zone to us-central1:
+Set the compute region and zone to europe-west1:
 
 ```
 gcloud config set compute/region europe-west1
